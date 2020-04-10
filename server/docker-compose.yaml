@@ -8,13 +8,14 @@ services:
       - ./api/:/app
     environment:
       NODE_ENV: "development"
+      NEO4J_PORT: "7687"
     ports:
-      - "8000:80"
+      - "8000:8000"
     depends_on:
-      - "database"
+      - "neo4j"
     command: ["yarn", "dev"]
 
-  database:
+  neo4j:
     image: "neo4j:4.0.3"
     ports:
       - "7474:7474"
