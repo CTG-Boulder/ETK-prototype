@@ -1,4 +1,4 @@
-const mongoose = require('../services/mongoose')
+const mongoose = require('@/services/mongoose')
 
 const EncounterSchema = new mongoose.Schema({
   clientId: String
