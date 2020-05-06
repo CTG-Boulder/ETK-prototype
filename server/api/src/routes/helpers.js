@@ -1,6 +1,8 @@
+import mongoose from 'mongoose'
+import mongodb from 'mongodb'
 import config from '~/config'
 import logger from '~/services/logger'
-import ApiException from '~/exceptions/api-exception'
+import { ApiException } from '~/exceptions'
 
 // Error handler middleware
 export const errorHandler = (err, req, res, next) => {
@@ -11,28 +13,31 @@ export const errorHandler = (err, req, res, next) => {
 }
 
 export const errorToJson = e => {
+  let error
   if (e instanceof ApiException) {
-    if (config.isDev) {
-      // include a stack trace on development
-      return { ...e.toJSON(), stack: e.stack }
+    error = e.toJSON()
+  } else if (
+    e instanceof mongoose.Error.ValidationError ||
+    e instanceof mongodb.MongoError
+  ) {
+    let { name, message } = e
+    error = {
+      name,
+      message,
+      status: 400
     }
-    return e.toJSON()
   } else {
-    if (config.isDev) {
-      // include a stack trace on development
-      return {
-        name: 'Error'
-        , message: 'Server Error'
-        , status: 500
-        , stack: e.stack
-      }
-    }
     // obscure other errors for security reasons
-    return {
+    error = {
       name: 'Error'
       , status: 500
       , message: 'Server Error'
     }
+  }
+
+  if (config.isDev) {
+    // include a stack trace on development
+    return { ...error, stack: e.stack }
   }
 }
 
@@ -43,6 +48,10 @@ export const apiResponse = (res, data = {}, errors = []) => {
   // use the highest status
   const status = errors.reduce((s, e) => Math.max(s, e.status), 0)
   res.status(status || 200)
+
+  if ( data === null ){
+    data = {}
+  }
 
   res.send({
     data,

@@ -1,4 +1,4 @@
-export default class ApiException extends Error {
+export class ApiException extends Error {
   constructor(msg, status = 500){
     super(msg)
     this.name = 'ApiException'
@@ -12,5 +12,11 @@ export default class ApiException extends Error {
       , name: this.name
       , status: this.status
     }
+  }
+}
+
+export class InvalidRequestException extends ApiException {
+  constructor(msg){
+    super(msg, 400)
   }
 }

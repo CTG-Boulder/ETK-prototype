@@ -1,4 +1,5 @@
 import mongoose from '~/services/mongoose'
+import { InvalidRequestException } from '../../exceptions'
 
 export const STATUS = {
   POSITIVE: "POSITIVE"
@@ -30,8 +31,22 @@ const schema = new mongoose.Schema({
   timestamps: true
 })
 
-schema.statics.fetchSince = function( date ){
-  return this.find({})
-}
+schema.index({ createdAt: 1 })
+schema.index({ updatedAt: 1 })
+schema.index({ timestamp: 1 })
+
+schema.loadClass(class {
+  static fetchSince( date ){
+    return this.find({})
+  }
+
+  static createFromList( events ){
+    if (!events || !events.length) {
+      throw new InvalidRequestException('No events provided', 400)
+    }
+
+    return this.create(events)
+  }
+})
 
 export default mongoose.model('TraceEvent', schema)
