@@ -1,4 +1,4 @@
-const mongoose = require('@/services/mongoose')
+import mongoose from '~/services/mongoose.js'
 
 const EncounterSchema = new mongoose.Schema({
   clientId: String
@@ -6,4 +6,4 @@ const EncounterSchema = new mongoose.Schema({
   timestamps: true
 })
 
-module.exports = mongoose.model('Encounter', EncounterSchema)
+export default mongoose.model('Encounter', EncounterSchema)

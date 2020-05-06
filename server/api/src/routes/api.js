@@ -1,5 +1,5 @@
-const Encounter = require('@/models/encounter')
-const Router = require('express-promise-router')
+import Encounter from '~/models/encounter'
+import Router from 'express-promise-router'
 const route = new Router()
 
 route.get('/', async (req, res, next) => {
@@ -9,4 +9,4 @@ route.get('/', async (req, res, next) => {
   res.json(doc.toObject())
 })
 
-module.exports = route
+export default route
