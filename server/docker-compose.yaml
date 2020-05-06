@@ -1,4 +1,4 @@
-version: '3'
+version: '3.1'
 
 services:
   api:
@@ -8,18 +8,26 @@ services:
       - ./api/:/app
     environment:
       NODE_ENV: "development"
-      NEO4J_PORT: "7687"
     ports:
       - "8000:8000"
     depends_on:
-      - "neo4j"
+      - "mongodb"
     command: ["yarn", "dev"]
-
-  neo4j:
-    image: "neo4j:4.0.3"
-    ports:
-      - "7474:7474"
-      - "7687:7687"
+  
+  mongodb:
+    image: mongo
+    restart: always
     environment:
-      # dev only!
-      NEO4J_AUTH: "none"
+      # for production we can use _FILE variables and docker secrets
+      # https://hub.docker.com/_/mongo
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+
+  # neo4j:
+  #   image: "neo4j:4.0.3"
+  #   ports:
+  #     - "7474:7474"
+  #     - "7687:7687"
+  #   environment:
+  #     # dev only!
+  #     NEO4J_AUTH: "none"
