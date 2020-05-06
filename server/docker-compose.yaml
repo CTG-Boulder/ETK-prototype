@@ -8,12 +8,14 @@ services:
       - ./api/:/app
     environment:
       NODE_ENV: "development"
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
     ports:
       - "8000:8000"
     depends_on:
       - "mongodb"
     command: ["yarn", "dev"]
-  
+
   mongodb:
     image: mongo
     restart: always
