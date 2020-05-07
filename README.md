@@ -19,3 +19,7 @@ To deploy on a production server, again use docker-compose:
 cd server
 docker-compose -f docker-compose.prod.yaml --build
 ```
+
+## TODO
+
+- [ ] move mongodb credentials to docker secrets
