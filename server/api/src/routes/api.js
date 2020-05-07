@@ -19,7 +19,7 @@ route.get('/events', async (req, res) => {
   apiResponse(res, docs)
 })
 
-route.put('/events', async (req, res) => {
+route.post('/events', async (req, res) => {
   let results = await TraceEvent.createFromList(req.body.events)
   apiResponse(res, { count: results.length })
 })
