@@ -1,0 +1,23 @@
+version: '3.1'
+
+services:
+  api:
+    build: './api'
+    environment:
+      NODE_ENV: "production"
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    ports:
+      - "8000:8000"
+    depends_on:
+      - "mongodb"
+    command: ["yarn", "start"]
+
+  mongodb:
+    image: mongo
+    restart: always
+    environment:
+      # for production we can use _FILE variables and docker secrets
+      # https://hub.docker.com/_/mongo
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
