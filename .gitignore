@@ -104,3 +104,7 @@ dist
 .tern-port
 
 .DS_Store
+
+server/api/native/target
+server/api/native/artifacts.json
+server/api/native/index.node

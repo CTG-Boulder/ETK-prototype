@@ -1,5 +1,16 @@
 import mongoose from '~/services/mongoose'
 import { InvalidRequestException } from '../../exceptions'
+import { KeyEncoder } from '~/../native/index.node'
+
+function isValidHex(v){
+  return /[0-9a-f]+/.test(v)
+}
+
+const keyEncoder = new KeyEncoder()
+
+function encodeKey(key) {
+  return keyEncoder.encode(key)
+}
 
 export const STATUS = {
   POSITIVE: "POSITIVE"
@@ -12,6 +23,9 @@ const schema = new mongoose.Schema({
     type: String
     , unique: true
     , required: true
+    , validate( v ){
+      return isValidHex(v)
+    }
   }
   , status: {
     type: String
@@ -36,8 +50,9 @@ schema.index({ updatedAt: 1 })
 schema.index({ timestamp: 1 })
 
 schema.loadClass(class {
-  static fetchSince( date ){
-    return this.find({})
+  static fetchEncodedKeysSince( date ){
+    return this.find({ }).select('clientKey')
+      .then(docs => docs.map(doc => encodeKey(doc.clientKey)))
   }
 
   static createFromList( events ){
@@ -49,4 +64,5 @@ schema.loadClass(class {
   }
 })
 
-export default mongoose.model('TraceEvent', schema)
+const model = mongoose.model('TraceEvent', schema)
+export default model

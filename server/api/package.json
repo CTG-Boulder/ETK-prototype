@@ -4,8 +4,10 @@
   "description": "Contact tracing server",
   "main": "src/index.js",
   "scripts": {
+    "install": "neon build --release",
     "start": "node -r @std/esm -r module-alias/register src/index.js",
-    "dev": "nodemon -r @std/esm -r module-alias/register src/index.js --exec \"yarn test && node\" | pino-pretty -c",
+    "dev": "nodemon -r @std/esm -r module-alias/register src/index.js --exec \"yarn test && yarn neon && node\" | pino-pretty -c",
+    "neon": "neon build --release",
     "test": "eslint src/**.js"
   },
   "@std/esm": "cjs",
@@ -28,6 +30,7 @@
     "lodash": "^4.17.15",
     "module-alias": "^2.2.2",
     "mongoose": "^5.9.12",
+    "neon-cli": "^0.4.0",
     "pino": "^6.2.1",
     "pino-http": "^5.1.0"
   },

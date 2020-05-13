@@ -1,0 +1,6 @@
+{
+  "ignore": [
+    "native/target",
+    "native/artifacts.json"
+  ]
+}

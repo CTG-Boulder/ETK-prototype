@@ -1,0 +1,17 @@
+[package]
+name = "key_crypto"
+version = "0.1.0"
+authors = ["Jasper <well.caffeinated@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "key_crypto"
+crate-type = ["cdylib"]
+
+[build-dependencies]
+neon-build = "0.3.3"
+
+[dependencies]
+neon = "0.3.3"
+rust-gmp = "0.5"

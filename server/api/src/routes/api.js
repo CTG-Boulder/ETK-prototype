@@ -2,6 +2,7 @@ import TraceEvent from '~/models/trace-event'
 import Router from 'express-promise-router'
 import bodyParser from 'body-parser'
 import { errorHandler, apiResponse } from './helpers'
+
 const route = new Router()
 
 const HELLO = {
@@ -15,8 +16,10 @@ route.use(bodyParser.json())
 route.get('/', async (req, res) => res.json(HELLO))
 
 route.get('/events', async (req, res) => {
-  let docs = await TraceEvent.fetchSince(req.query.since)
-  apiResponse(res, docs)
+  let encodedKeys = await TraceEvent.fetchEncodedKeysSince(req.query.since)
+  apiResponse(res, {
+    encodedKeys
+  })
 })
 
 route.post('/events', async (req, res) => {
