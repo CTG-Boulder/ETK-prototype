@@ -14,56 +14,85 @@ pub struct KeyEncoder {
   a_inv : Mpz,
 }
 
+impl KeyEncoder {
+  pub fn new() -> Self {
+    let q = Mpz::from_str_radix(Q_STR, 10).unwrap();
+    let p = Mpz::from_str_radix(P_STR, 10).unwrap();
+    let mut rng = RandState::new();
+    let seed = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos() as u64;
+    rng.seed_ui(seed);
+
+    let two = Mpz::one() + Mpz::one();
+    let a = rng.urandom_2exp(1024) * two.clone() + 1;
+
+    let u = p.clone() - 1;
+    let a_inv = a.invert(&u).unwrap();
+
+    KeyEncoder {
+      p,
+      q,
+      rng,
+      a,
+      a_inv
+    }
+  }
+
+  pub fn encode(&self, key_hex : &str) -> String {
+    let key = Mpz::from_str_radix(key_hex, 16).unwrap();
+    let encoded_key = key.powm_sec(&self.a, &self.p);
+
+    encoded_key.to_str_radix(16)
+  }
+
+  pub fn decode(&self, key_encoded_hex : &str) -> String {
+    let encoded_key = Mpz::from_str_radix(key_encoded_hex, 16).unwrap();
+    let decoded_key = encoded_key.powm_sec(&self.a_inv, &self.p);
+
+    decoded_key.to_str_radix(16)
+  }
+
+  pub fn get_prime(&self) -> String { self.p.to_str_radix(16) }
+}
+
 declare_types! {
   pub class JsKeyEncoder for KeyEncoder {
     init(mut _cx){
-      let q = Mpz::from_str_radix(Q_STR, 10).unwrap();
-      let p = Mpz::from_str_radix(P_STR, 10).unwrap();
-      let mut rng = RandState::new();
-      let seed = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos() as u64;
-      rng.seed_ui(seed);
-
-      let two = Mpz::one() + Mpz::one();
-      let a = rng.urandom_2exp(1024) * two.clone() + 1;
-
-      let u = p.clone() - 1;
-      let a_inv = a.invert(&u).unwrap();
-
-      Ok(KeyEncoder {
-        p,
-        q,
-        rng,
-        a,
-        a_inv
-      })
+      Ok(KeyEncoder::new())
     }
 
     method encode(mut cx) {
       let key_hex = cx.argument::<JsString>(0)?.value();
-      let key = Mpz::from_str_radix(key_hex.as_str(), 16).unwrap();
       let this = cx.this();
       let encoded_key = {
         let guard = cx.lock();
-        let a = &this.borrow(&guard).a;
-        let p = &this.borrow(&guard).p;
-        key.powm_sec(&a, &p)
+        let ke = &this.borrow(&guard);
+        ke.encode(key_hex.as_str())
       };
 
-      Ok(cx.string(encoded_key.to_str_radix(16)).upcast())
+      Ok(cx.string(encoded_key).upcast())
     }
 
     method decode(mut cx) {
       let key_encoded_hex = cx.argument::<JsString>(0)?.value();
-      let encoded_key = Mpz::from_str_radix(key_encoded_hex.as_str(), 16).unwrap();
       let this = cx.this();
       let decoded_key = {
         let guard = cx.lock();
-        let a_inv = &this.borrow(&guard).a_inv;
-        let p = &this.borrow(&guard).p;
-        encoded_key.powm_sec(&a_inv, &p)
+        let ke = &this.borrow(&guard);
+        ke.decode(key_encoded_hex.as_str())
       };
 
-      Ok(cx.string(decoded_key.to_str_radix(16)).upcast())
+      Ok(cx.string(decoded_key).upcast())
+    }
+
+    method getPrime(mut cx){
+      let this = cx.this();
+      let prime = {
+        let guard = cx.lock();
+        let ke = &this.borrow(&guard);
+        ke.get_prime()
+      };
+
+      Ok(cx.string(prime).upcast())
     }
   }
 }

@@ -1,6 +1,9 @@
-import TraceEvent from '~/models/trace-event'
+import moment from 'moment'
+import PositiveKey from '~/models/positive-key'
+import { encodeKeys, getPrime } from '~/services/key-encoder'
 import Router from 'express-promise-router'
 import bodyParser from 'body-parser'
+import { InvalidRequestException } from '~/exceptions'
 import { errorHandler, apiResponse } from './helpers'
 
 const route = new Router()
@@ -15,16 +18,34 @@ route.use(bodyParser.json())
 
 route.get('/', async (req, res) => res.json(HELLO))
 
-route.get('/events', async (req, res) => {
-  let encodedKeys = await TraceEvent.fetchEncodedKeysSince(req.query.since)
+route.get('/verify', async (req, res) => {
   apiResponse(res, {
-    encodedKeys
+    sharedPrime: getPrime()
   })
 })
 
-route.post('/events', async (req, res) => {
-  let results = await TraceEvent.createFromList(req.body.events)
-  apiResponse(res, { count: results.length })
+route.put('/verify', async (req, res) => {
+  let q = req.query
+  let keys = req.body.keys
+
+  if (!keys || !keys.length){
+    throw new InvalidRequestException('Must send keys in request body as "keys"')
+  }
+
+  let clientKeys = encodeKeys(keys)
+  let updatedAt = q.updatedAt ? moment(q.updatedAt) : moment().subtract(14, 'days')
+  let positiveKeys = await PositiveKey.fetchEncodedKeysSince({ updatedAt })
+  apiResponse(res, {
+    since: updatedAt,
+    sharedPrime: getPrime(),
+    positiveKeys,
+    clientKeys
+  })
+})
+
+route.post('/report', async (req, res) => {
+  let results = await PositiveKey.createFromList(req.body.positives)
+  apiResponse(res, { added: results.length })
 })
 
 // this must be last

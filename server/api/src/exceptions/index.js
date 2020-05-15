@@ -3,7 +3,7 @@ export class ApiException extends Error {
     super(msg)
     this.name = 'ApiException'
 
-    this.status = 500
+    this.status = status
   }
 
   toJSON(){

@@ -1,16 +1,7 @@
 import mongoose from '~/services/mongoose'
+import { encodeKeys } from '~/services/key-encoder'
 import { InvalidRequestException } from '../../exceptions'
-import { KeyEncoder } from '~/../native/index.node'
-
-function isValidHex(v){
-  return /[0-9a-f]+/.test(v)
-}
-
-const keyEncoder = new KeyEncoder()
-
-function encodeKey(key) {
-  return keyEncoder.encode(key)
-}
+import { isValidHex } from './positive-key.helpers'
 
 export const STATUS = {
   POSITIVE: "POSITIVE"
@@ -50,19 +41,21 @@ schema.index({ updatedAt: 1 })
 schema.index({ timestamp: 1 })
 
 schema.loadClass(class {
-  static fetchEncodedKeysSince( date ){
-    return this.find({ }).select('clientKey')
-      .then(docs => docs.map(doc => encodeKey(doc.clientKey)))
+  static fetchEncodedKeysSince({ updatedAt }){
+    return this.find({
+        updatedAt: { $gte: updatedAt }
+      }).select('clientKey')
+      .then(docs => encodeKeys(docs.map(doc => doc.clientKey)))
   }
 
-  static createFromList( events ){
-    if (!events || !events.length) {
-      throw new InvalidRequestException('No events provided', 400)
+  static createFromList( positives ){
+    if (!positives || !positives.length) {
+      throw new InvalidRequestException('No positives provided', 400)
     }
 
-    return this.create(events)
+    return this.create(positives)
   }
 })
 
-const model = mongoose.model('TraceEvent', schema)
+const model = mongoose.model('PositiveKey', schema)
 export default model
