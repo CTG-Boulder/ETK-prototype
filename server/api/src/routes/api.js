@@ -1,6 +1,6 @@
 import moment from 'moment'
 import PositiveKey from '~/models/positive-key'
-import { encodeKeys, getPrime } from '~/services/key-encoder'
+import { encodeKeysAndShuffle, getPrime } from '~/services/key-encoder'
 import Router from 'express-promise-router'
 import bodyParser from 'body-parser'
 import { InvalidRequestException } from '~/exceptions'
@@ -32,7 +32,7 @@ route.put('/verify', async (req, res) => {
     throw new InvalidRequestException('Must send keys in request body as "keys"')
   }
 
-  let clientKeys = encodeKeys(keys)
+  let clientKeys = encodeKeysAndShuffle(keys)
   let updatedAt = q.updatedAt ? moment(q.updatedAt) : moment().subtract(14, 'days')
   let positiveKeys = await PositiveKey.fetchEncodedKeysSince({ updatedAt })
   apiResponse(res, {

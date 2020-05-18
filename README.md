@@ -2,6 +2,14 @@
 
 Contact tracing server prototype.
 
+## Notes
+
+Currently the server secret random number is generated at start time of the
+thread. If multiple threads are used they will have different random numbers
+for encoding the keys. This shouldn't be a problem with the current protocol
+but if future iterations of this protocol call for multiple roundtrips between
+server and client, then this could cause consistency problems.
+
 ## Usage / Verification flow
 
 All API responses come in the form:

@@ -1,5 +1,5 @@
 import mongoose from '~/services/mongoose'
-import { encodeKeys } from '~/services/key-encoder'
+import { encodeKeysAndShuffle } from '~/services/key-encoder'
 import { InvalidRequestException } from '../../exceptions'
 import { isValidHex } from './positive-key.helpers'
 
@@ -45,7 +45,7 @@ schema.loadClass(class {
     return this.find({
         updatedAt: { $gte: updatedAt }
       }).select('clientKey')
-      .then(docs => encodeKeys(docs.map(doc => doc.clientKey)))
+      .then(docs => encodeKeysAndShuffle(docs.map(doc => doc.clientKey)))
   }
 
   static createFromList( positives ){
