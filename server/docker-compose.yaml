@@ -3,9 +3,9 @@ version: '3.1'
 services:
   api:
     build: './api'
-    volumes:
-      # for development
-      - ./api/:/app
+    # volumes:
+    #   # for development
+    #   - ./api/:/app
     environment:
       NODE_ENV: "development"
       MONGO_INITDB_ROOT_USERNAME: root
@@ -14,11 +14,14 @@ services:
       - "8000:8000"
     depends_on:
       - "mongodb"
+    restart: always
     command: ["yarn", "dev"]
 
   mongodb:
     image: mongo
     restart: always
+    volumes:
+      - ./data/:/data/db:rw
     environment:
       # for production we can use _FILE variables and docker secrets
       # https://hub.docker.com/_/mongo

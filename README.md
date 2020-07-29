@@ -80,7 +80,7 @@ To deploy on a production server, again use docker-compose:
 
 ```sh
 cd server
-docker-compose -f docker-compose.prod.yaml --build
+docker-compose -f docker-compose.prod.yaml up --build
 ```
 
 ## TODO
