@@ -72,15 +72,23 @@ To spin up a development server, install docker and docker-compose, then use:
 ```sh
 cd server
 docker-compose build
+```
+
+If you run into trouble in windows, you may need to run:
+
+```sh
 docker run -i -t --mount type=bind,source=<path to ETK code roo>\server\api,destination=/app server_api /bin/bash
 ```
-Inside the container you will then run:
+
+Inside the `api/` directory you will then run:
+
 ```sh
 yarn cache clean
 yarn install
-exit
 ```
+
 After a successful install you should be able to run:
+
 ```sh
 docker-compose up
 ```
