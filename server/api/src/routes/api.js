@@ -2,6 +2,7 @@ import moment from 'moment'
 import PositiveKey from '~/models/positive-key'
 import { encodeKeysAndShuffle, getPrime } from '~/services/key-encoder'
 import Router from 'express-promise-router'
+import EncountersRoute from './encounters'
 import bodyParser from 'body-parser'
 import { InvalidRequestException } from '~/exceptions'
 import { errorHandler, apiResponse } from './helpers'
@@ -9,7 +10,7 @@ import { errorHandler, apiResponse } from './helpers'
 const route = new Router()
 
 const HELLO = {
-  name: 'ETK Tracing Api'
+  name: 'ETK Api'
   , version: '0.1'
 }
 
@@ -47,6 +48,8 @@ route.post('/report', async (req, res) => {
   let results = await PositiveKey.createFromList(req.body.positives)
   apiResponse(res, { added: results.length })
 })
+
+route.use('/encounters', EncountersRoute)
 
 // this must be last
 route.use(errorHandler)

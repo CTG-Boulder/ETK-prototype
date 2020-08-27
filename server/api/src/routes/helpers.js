@@ -1,3 +1,4 @@
+import _omit from 'lodash/omit'
 import mongoose from 'mongoose'
 import mongodb from 'mongodb'
 import config from '~/config'
@@ -57,4 +58,26 @@ export const apiResponse = (res, data = {}, errors = []) => {
     data,
     errors
   })
+}
+
+const RESERVED_QUERY_PARAMS = ['pageSize', 'page', 'sortBy']
+
+export const getQueryFilters = (req) => {
+  let {
+    pageSize = config.maxQuerySize,
+    page = 0
+  } = req.query
+
+  pageSize = Math.min(pageSize, config.maxQuerySize)
+
+  let startAt = page * pageSize
+
+  let filters = _omit(req.query, RESERVED_QUERY_PARAMS)
+
+  return {
+    startAt,
+    page,
+    pageSize,
+    filters
+  }
 }
