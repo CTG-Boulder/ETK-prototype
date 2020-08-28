@@ -113,7 +113,7 @@ export default {
   methods: {
     fetch(){
       this.loading = true
-      return fetch(`http://localhost:8000/api/encounters/debug?page=${this.currentPage}&sortBy=${this.sortBy}`)
+      return fetch(`/api/encounters/debug?page=${this.currentPage}&sortBy=${this.sortBy}`)
         .then(res => {
           if (res.status === 200) {
             this.totalPages = res.headers.get('X-Pages')
