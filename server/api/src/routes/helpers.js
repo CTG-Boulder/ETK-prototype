@@ -65,19 +65,20 @@ const RESERVED_QUERY_PARAMS = ['pageSize', 'page', 'sortBy']
 export const getQueryFilters = (req) => {
   let {
     pageSize = config.maxQuerySize,
-    page = 0
+    page = 0,
+    sortBy
   } = req.query
 
   pageSize = Math.min(pageSize, config.maxQuerySize)
 
   let startAt = page * pageSize
-
   let filters = _omit(req.query, RESERVED_QUERY_PARAMS)
 
   return {
     startAt,
     page,
     pageSize,
-    filters
+    filters,
+    sortBy
   }
 }

@@ -1,6 +1,17 @@
 version: '3.3'
 
 services:
+  vue:
+    hostname: vue
+    image: 'node'
+    volumes:
+      - type: bind
+        source: ./admin-panel
+        target: /app
+        volume:
+          nocopy: true
+    working_dir: /app
+    command: ['yarn', 'dev']
   nginx:
     hostname: nginx
     build: ./nginx
@@ -8,11 +19,17 @@ services:
       - 8000:80
       - 8443:443
     volumes:
-      - ./admin-panel:/usr/share/nginx/html:ro
+      # - ./admin-panel:/usr/share/nginx/html:ro
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./nginx/ssl:/etc/ssl/private
+      - type: bind
+        source: ./admin-panel
+        target: /usr/share/nginx/html
+        volume:
+          nocopy: true
     depends_on:
       - "api"
+      - "vue"
   api:
     hostname: api
     build: './api'
@@ -47,7 +64,7 @@ services:
 
 volumes:
   dbdata:
-
+  admin-panel:
   # neo4j:
   #   image: "neo4j:4.0.3"
   #   ports:

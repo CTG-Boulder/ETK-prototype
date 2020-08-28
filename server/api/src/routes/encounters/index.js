@@ -13,10 +13,15 @@ const route = new Router()
 route.get('/debug', async (req, res) => {
   const queryFilters = getQueryFilters(req)
   let encounters = await EncounterRecord
-    .find(queryFilters.filters)
+    .find(queryFilters.filters, null, { sort: queryFilters.sortBy })
     .skip(queryFilters.startAt)
     .limit(queryFilters.pageSize)
 
+  let count = await EncounterRecord
+    .find(queryFilters.filters, null, { sort: queryFilters.sortBy })
+    .count()
+
+  res.header('X-Pages', Math.floor(count / queryFilters.pageSize))
   apiResponse(res, { encounters })
 })
 
