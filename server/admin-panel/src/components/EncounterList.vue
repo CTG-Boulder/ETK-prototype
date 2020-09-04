@@ -33,10 +33,10 @@
         centered
         v-slot="props"
       >
-        {{ props.row._meta.mac | hex }}
+        {{ props.row._meta.mac }}
       </b-table-column>
 
-      <b-table-column
+      <!-- <b-table-column
         field="_meta.first_time"
         label="First Time"
         sortable
@@ -54,7 +54,7 @@
         v-slot="props"
       >
         {{ props.row._meta.last_time }}
-      </b-table-column>
+      </b-table-column> -->
 
       <b-table-column field="createdAt" label="createdAt" sortable centered v-slot="props">
         {{ new Date(props.row.createdAt).toISOString().replace('T', ' ') }}
@@ -82,9 +82,8 @@
 
 <script>
 export default {
-  name: "HelloWorld",
+  name: "EncounterList",
   props: {
-    msg: String,
   },
   data: () => ({
     encounterData: [],
@@ -100,7 +99,7 @@ export default {
   }),
   filters: {
     hex(v){
-      return v.map(n => n.toString(16)).join('-')
+      return v.map(n => ('00' + n.toString(16)).slice(-2)).join('-')
     }
   },
   mounted(){
@@ -113,7 +112,7 @@ export default {
   methods: {
     fetch(){
       this.loading = true
-      return fetch(`/api/encounters/debug?page=${this.currentPage}&sortBy=${this.sortBy}`)
+      return fetch(`/api/encounters/dummy?page=${this.currentPage}&sortBy=${this.sortBy}`)
         .then(res => {
           if (res.status === 200) {
             this.totalPages = res.headers.get('X-Pages')

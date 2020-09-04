@@ -1,16 +1,19 @@
 <template>
   <div id="app">
+    <EncounterChart/>
     <EncounterList/>
   </div>
 </template>
 
 <script>
 import EncounterList from './components/EncounterList.vue'
+import EncounterChart from './components/EncounterChart.vue'
 
 export default {
   name: 'app',
   components: {
-    EncounterList
+    EncounterList,
+    EncounterChart
   }
 }
 </script>
