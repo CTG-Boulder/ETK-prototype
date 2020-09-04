@@ -1,56 +1,26 @@
 <template>
-  <div class="container">
-    <b-field label="Filter by">
-        <b-select placeholder="Select a filter" v-model="activeFilter">
-            <option
-                v-for="name in filterNames"
-                :value="name"
-                :key="name">
-                {{ name }}
-            </option>
-        </b-select>
-    </b-field>
-    <vue-plotly :data="chartData" :layout="chartLayout"/>
-  </div>
+  <vue-plotly :data="chartData" :layout="chartLayout"/>
 </template>
 
 <script>
 import moment from 'moment'
 import VuePlotly from '@statnett/vue-plotly'
 
-const IQR_CUTOFF = 50
-
-function getDistance(usoundData){
-  if (usoundData.left_iqr >= IQR_CUTOFF && usoundData.right_iqr > IQR_CUTOFF){ return false }
-
-  return (Math.min(usoundData.left, usoundData.right) - 50) / 300
-}
-
-const FILTERS = {
-  none: () => true,
-  lessThan2m: (e) => {
-    let d = getDistance(e._meta.usound_data)
-    return d && d < 2
-  }
-}
 
 export default {
   name: "EncounterChart",
   props: {
+    encounterData: Array,
+    bucketSizeHours: {
+      type: Number,
+      default: 1
+    }
   },
   components: {
     VuePlotly
   },
   data: () => ({
-    loading: false,
-    encounterData: [],
-    bucketSizeHours: 1,
-    filterNames: Object.keys(FILTERS),
-    activeFilter: 'lessThan2m'
   }),
-  mounted(){
-    this.fetch()
-  },
   watch: {
   },
   computed: {
@@ -80,10 +50,9 @@ export default {
     },
 
     chartData(){
-      let filter = FILTERS[this.activeFilter]
       return [{
         x: this.binTimes,
-        y: this.dataBins.map(b => b.filter(filter).length),
+        y: this.dataBins.map(b => b.length),
         type: 'bar'
       }]
     },
@@ -109,38 +78,6 @@ export default {
           , ticks: 'inside'
           , zeroline: false
         }
-      }
-    }
-  },
-  methods: {
-    async fetch(){
-      this.loading = true
-      let totalPages = 1
-      let encounters = []
-      try {
-        for (let currentPage = 0; currentPage < totalPages; currentPage++){
-          let data = await fetch(`/api/encounters/dummy?page=${currentPage}&sortBy=timestamp`)
-            .then(res => {
-              if (res.status === 200) {
-                totalPages = res.headers.get('X-Pages')
-                return res.json()
-              } else {
-                throw new Error('Failed to get data!')
-              }
-            })
-            .then(json => {
-              // console.debug(json)
-              return json.data.encounters
-            })
-
-          encounters = encounters.concat(data)
-        }
-        this.encounterData = encounters
-      } catch (error){
-        // eslint-disable-next-line
-        console.error(error)
-      } finally {
-        this.loading = false
       }
     }
   }

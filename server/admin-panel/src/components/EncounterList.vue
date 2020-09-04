@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="table">
     <!-- <pre class="content">{{ JSON.stringify(encounterData[0], null, 2) }}</pre> -->
     <b-table
       class="encounter-table"
@@ -84,6 +84,7 @@
 export default {
   name: "EncounterList",
   props: {
+
   },
   data: () => ({
     encounterData: [],
