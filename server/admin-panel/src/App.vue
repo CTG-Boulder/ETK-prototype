@@ -5,9 +5,9 @@
         <div class="column menu">
           <b-menu class="has-text-left">
             <b-menu-list>
-              <b-menu-item icon="speedometer" label="Statistics"></b-menu-item>
-              <b-menu-item icon="chart-bar" label="Chart"></b-menu-item>
-              <b-menu-item icon="table-of-contents" label="Table"></b-menu-item>
+              <b-menu-item icon="speedometer" label="Statistics" tag="router-link" :to="{ name: 'statistics' }"></b-menu-item>
+              <b-menu-item icon="chart-bar" label="Chart" tag="router-link" :to="{ name: 'chart' }"></b-menu-item>
+              <b-menu-item icon="table-of-contents" label="Table" tag="router-link" :to="{ name: 'table' }"></b-menu-item>
             </b-menu-list>
           </b-menu>
         </div>
@@ -49,8 +49,8 @@
             </b-field>
           </b-field>
 
-          <EncounterChart :encounterData="filteredEncounters"/>
-          <EncounterList/>
+          <router-view :encounterData="filteredEncounters"></router-view>
+
         </div>
       </div>
     </div>
@@ -59,8 +59,6 @@
 
 <script>
 import moment from 'moment'
-import EncounterList from './components/EncounterList.vue'
-import EncounterChart from './components/EncounterChart.vue'
 
 const IQR_CUTOFF = 50
 
@@ -81,8 +79,6 @@ const FILTERS = {
 export default {
   name: 'app',
   components: {
-    EncounterList,
-    EncounterChart
   },
   data: () => ({
     loading: false,

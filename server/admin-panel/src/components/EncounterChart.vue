@@ -3,9 +3,8 @@
 </template>
 
 <script>
-import moment from 'moment'
 import VuePlotly from '@statnett/vue-plotly'
-
+import { getDataBins, getBinTimes } from '@/util/data-helpers'
 
 export default {
   name: "EncounterChart",
@@ -25,28 +24,11 @@ export default {
   },
   computed: {
     dataBins(){
-      if (!this.encounterData.length){ return [] }
-      let startDate = moment(this.encounterData[0].timestamp)
-      return this.encounterData.reduce((bins, d) => {
-        let date = moment(d.timestamp)
-        let index = Math.floor(date.diff(startDate, 'hours') / this.bucketSizeHours)
-        let bin = bins[index]
-        bin.push(d)
-        return bins
-      }, Array(this.binTimes.length).fill(0).map(() => []))
+      return getDataBins(this.encounterData, this.bucketSizeHours)
     },
 
     binTimes(){
-      if (!this.encounterData.length){ return [] }
-      let x = []
-      let start = moment(this.encounterData[0].timestamp)
-      let end = moment(this.encounterData[this.encounterData.length - 1].timestamp).add(this.bucketSizeHours, 'hours')
-      let count = end.diff(start, 'hours') / this.bucketSizeHours
-      for (let i = 0; i < count; i++){
-        let d = start.add(this.bucketSizeHours, 'hours').toISOString()
-        x.push(d)
-      }
-      return x
+      return getBinTimes(this.encounterData, this.bucketSizeHours)
     },
 
     chartData(){
