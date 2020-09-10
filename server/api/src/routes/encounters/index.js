@@ -38,6 +38,18 @@ route.post('/debug', async (req, res) => {
   })
 })
 
+// debug helper
+route.post('/debug/mock', async (req, res) => {
+  if (req.query.purge){
+    await EncounterRecord.remove({})
+  }
+  let records = generateDummyEncounters(300)
+  let encounters = await EncounterRecord.createFromList(records)
+  apiResponse(res, {
+    added: encounters.length
+  })
+})
+
 function generateDummyEncounters(count){
   return _times(count, g => {
     let e = {

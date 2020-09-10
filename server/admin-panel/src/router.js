@@ -7,6 +7,7 @@ import TablePage from '@/pages/TablePage'
 Vue.use(Router)
 
 const router = new Router({
+  linkActiveClass: 'is-active',
   routes: [
     {
       path: '/statistics'

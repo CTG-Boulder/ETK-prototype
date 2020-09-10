@@ -12,10 +12,11 @@
           </b-menu>
         </div>
         <div class="column">
-          <b-field grouped>
+          <b-field grouped position="is-centered">
             <b-field label="Date Range">
               <b-datetimepicker
                 v-model="dateStart"
+                :datetime-formatter="formatDatetime"
                 rounded
                 placeholder="Start at..."
                 icon="calendar-today"
@@ -24,6 +25,7 @@
               </b-datetimepicker>
               <b-datetimepicker
                 v-model="dateEnd"
+                :datetime-formatter="formatDatetime"
                 :min-datetime="dateStart"
                 rounded
                 placeholder="End at..."
@@ -63,6 +65,7 @@ import moment from 'moment'
 const IQR_CUTOFF = 50
 
 function getDistance(usoundData){
+  if (!usoundData){ return false }
   if (usoundData.left_iqr >= IQR_CUTOFF && usoundData.right_iqr > IQR_CUTOFF){ return false }
 
   return (Math.min(usoundData.left, usoundData.right) - 50) / 300
@@ -83,7 +86,7 @@ export default {
   data: () => ({
     loading: false,
     encounterData: [],
-    dateStart: moment().subtract(7, 'days').toDate(),
+    dateStart: moment().subtract(6, 'months').toDate(),
     dateEnd: new Date(),
     filterNames: Object.keys(FILTERS),
     activeFilter: 'lessThan2m'
@@ -100,14 +103,24 @@ export default {
     }
   },
 
+  watch: {
+    dateStart: 'fetch',
+    dateEnd: 'fetch'
+  },
+
   methods: {
+    formatDatetime(d){
+      return moment(d).format('lll')
+    },
     async fetch(){
       this.loading = true
       let totalPages = 1
       let encounters = []
+      let dateStart = this.dateStart.toISOString()
+      let dateEnd = this.dateEnd.toISOString()
       try {
         for (let currentPage = 0; currentPage < totalPages; currentPage++){
-          let data = await fetch(`/api/encounters/dummy?page=${currentPage}&sortBy=timestamp`)
+          let data = await fetch(`/api/encounters/debug?page=${currentPage}&sortBy=timestamp&timestamp[$gte]=${dateStart}&timestamp[$lte]=${dateEnd}`)
             .then(res => {
               if (res.status === 200) {
                 totalPages = res.headers.get('X-Pages')
