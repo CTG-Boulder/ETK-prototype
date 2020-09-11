@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import VuePlotly from '@statnett/vue-plotly'
+import VuePlotly from '@/util/vue-plotly'
 import { getDataBins, getBinTimes } from '@/util/data-helpers'
 
 export default {
