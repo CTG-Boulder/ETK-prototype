@@ -12,7 +12,7 @@
           </b-menu>
         </div>
         <div class="column">
-          <b-field grouped position="is-centered">
+          <b-field grouped position="is-centered" v-if="$route.name !== 'table'">
             <b-field label="Date Range">
               <b-datetimepicker
                 v-model="dateStart"
@@ -39,19 +39,15 @@
 
             </b-field>
 
-            <b-field label="Filter by">
-              <b-select placeholder="Select a filter" v-model="activeFilter">
-                <option
-                  v-for="name in filterNames"
-                  :value="name"
-                  :key="name">
-                  {{ name }}
-                </option>
+            <b-field label="Max Distance">
+              <b-select placeholder="Select a filter" v-model="maxDistance">
+                <option :value="100">None</option>
+                <option :value="2">2 meters</option>
               </b-select>
             </b-field>
           </b-field>
 
-          <router-view :encounterData="filteredEncounters"></router-view>
+          <router-view :dateStart="dateStart" :dateEnd="dateEnd" :maxDistance="maxDistance"></router-view>
 
         </div>
       </div>
@@ -62,87 +58,19 @@
 <script>
 import moment from 'moment'
 
-const IQR_CUTOFF = 50
-
-function getDistance(usoundData){
-  if (!usoundData){ return false }
-  if (usoundData.left_iqr >= IQR_CUTOFF && usoundData.right_iqr > IQR_CUTOFF){ return false }
-
-  return (Math.min(usoundData.left, usoundData.right) - 50) / 300
-}
-
-const FILTERS = {
-  none: () => true,
-  lessThan2m: (e) => {
-    let d = getDistance(e._meta.usound_data)
-    return d && d < 2
-  }
-}
-
 export default {
   name: 'app',
   components: {
   },
   data: () => ({
-    loading: false,
-    encounterData: [],
     dateStart: moment().subtract(6, 'months').toDate(),
     dateEnd: new Date(),
-    filterNames: Object.keys(FILTERS),
-    activeFilter: 'lessThan2m'
+    maxDistance: 2
   }),
-
-  mounted(){
-    this.fetch()
-  },
-
-  computed: {
-    filteredEncounters(){
-      let filter = FILTERS[this.activeFilter]
-      return this.encounterData.filter(filter)
-    }
-  },
-
-  watch: {
-    dateStart: 'fetch',
-    dateEnd: 'fetch'
-  },
 
   methods: {
     formatDatetime(d){
       return moment(d).format('lll')
-    },
-    async fetch(){
-      this.loading = true
-      let totalPages = 1
-      let encounters = []
-      let dateStart = this.dateStart.toISOString()
-      let dateEnd = this.dateEnd.toISOString()
-      try {
-        for (let currentPage = 0; currentPage < totalPages; currentPage++){
-          let data = await fetch(`/api/encounters/debug?page=${currentPage}&sortBy=timestamp&timestamp[$gte]=${dateStart}&timestamp[$lte]=${dateEnd}`)
-            .then(res => {
-              if (res.status === 200) {
-                totalPages = res.headers.get('X-Pages')
-                return res.json()
-              } else {
-                throw new Error('Failed to get data!')
-              }
-            })
-            .then(json => {
-              // console.debug(json)
-              return json.data.encounters
-            })
-
-          encounters = encounters.concat(data)
-        }
-        this.encounterData = encounters
-      } catch (error){
-        // eslint-disable-next-line
-        console.error(error)
-      } finally {
-        this.loading = false
-      }
     }
   }
 }

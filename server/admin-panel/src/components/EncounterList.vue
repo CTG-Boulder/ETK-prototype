@@ -23,7 +23,7 @@
         centered
         v-slot="props"
       >
-        {{ props.row.clientKey }}
+        <span class="mono">{{ props.row.clientKey }}</span>
       </b-table-column>
 
       <b-table-column
@@ -113,7 +113,7 @@ export default {
   methods: {
     fetch(){
       this.loading = true
-      return fetch(`/api/encounters/dummy?page=${this.currentPage}&sortBy=${this.sortBy}`)
+      return fetch(`/api/encounters/debug?page=${this.currentPage - 1}&sortBy=${this.sortBy}`)
         .then(res => {
           if (res.status === 200) {
             this.totalPages = res.headers.get('X-Pages')
@@ -148,5 +148,8 @@ export default {
   max-height: 80vh;
   overflow: scroll;
   box-shadow: inset -1px 0 2px hsla(0, 0, 0, 0.3);
+}
+.mono {
+  font-family: monospace;
 }
 </style>

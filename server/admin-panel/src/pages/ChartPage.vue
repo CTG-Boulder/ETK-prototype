@@ -1,5 +1,5 @@
 <template>
-  <EncounterChart :encounterData="encounterData"/>
+  <EncounterChart v-bind="$props"/>
 </template>
 
 <script>
@@ -8,7 +8,9 @@ import EncounterChart from '@/components/EncounterChart.vue'
 export default {
   name: 'ChartPage',
   props: {
-    encounterData: Array
+    dateStart: Date,
+    dateEnd: Date,
+    maxDistance: Number
   },
   components: {
     EncounterChart

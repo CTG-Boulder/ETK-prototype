@@ -18,6 +18,7 @@ const router = new Router({
       path: '/chart'
       , name: 'chart'
       , component: ChartPage
+      , props: true
     },
     {
       path: '/table'

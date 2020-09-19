@@ -38,7 +38,39 @@ route.post('/debug', async (req, res) => {
   })
 })
 
+route.get('/debug/stats', async (req, res) => {
+  let stats = await EncounterRecord.getStats(
+    req.query.min_timestamp,
+    req.query.max_timestamp,
+    req.query.max_distance
+  )
+  apiResponse(res, {
+    stats
+  })
+})
+
+route.get('/debug/hourly', async (req, res) => {
+  let perHour = await EncounterRecord.hourlyAggregation(
+    req.query.min_timestamp,
+    req.query.max_timestamp,
+    req.query.max_distance
+  ).exec()
+
+  apiResponse(res, {
+    perHour
+  })
+})
+
 // debug helper
+route.get('/debug/purge', async (req, res) => {
+  if (req.query.purge) {
+    await EncounterRecord.remove({})
+  }
+
+  apiResponse(res, {
+    ok: 1
+  })
+})
 route.post('/debug/mock', async (req, res) => {
   if (req.query.purge){
     await EncounterRecord.remove({})

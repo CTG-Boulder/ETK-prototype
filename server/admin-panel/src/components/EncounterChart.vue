@@ -4,37 +4,42 @@
 
 <script>
 import VuePlotly from '@/util/vue-plotly'
-import { getDataBins, getBinTimes } from '@/util/data-helpers'
 
 export default {
   name: "EncounterChart",
   props: {
-    encounterData: Array,
-    bucketSizeHours: {
-      type: Number,
-      default: 1
-    }
+    dateStart: Date,
+    dateEnd: Date,
+    maxDistance: Number
   },
   components: {
     VuePlotly
   },
   data: () => ({
+    counts: []
   }),
+  mounted(){
+    this.fetch()
+  },
+
   watch: {
+    dateStart: 'fetch',
+    dateEnd: 'fetch',
+    maxDistance: 'fetch'
   },
   computed: {
     dataBins(){
-      return getDataBins(this.encounterData, this.bucketSizeHours)
+      return this.counts.map(d => d.count)
     },
 
     binTimes(){
-      return getBinTimes(this.encounterData, this.bucketSizeHours)
+      return this.counts.map(d => new Date(d._id))
     },
 
     chartData(){
       return [{
         x: this.binTimes,
-        y: this.dataBins.map(b => b.length),
+        y: this.dataBins,
         type: 'bar'
       }]
     },
@@ -61,6 +66,25 @@ export default {
           , zeroline: false
         }
       }
+    }
+  },
+  methods: {
+    async fetch(){
+      let dateStart = this.dateStart && this.dateStart.toISOString() || ''
+      let dateEnd = this.dateStart && this.dateEnd.toISOString() || ''
+      let maxD = this.maxDistance || ''
+      this.counts = await fetch(`/api/encounters/debug/hourly?min_timestamp=${dateStart}&max_timestamp=${dateEnd}&max_distance=${maxD}`)
+        .then(res => {
+          if (res.status === 200) {
+            return res.json()
+          } else {
+            throw new Error('Failed to get data!')
+          }
+        })
+        .then(json => {
+          return json.data.perHour
+        })
+
     }
   }
 }
