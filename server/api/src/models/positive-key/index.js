@@ -1,7 +1,7 @@
 import mongoose from '~/services/mongoose'
 import { encodeKeysAndShuffle } from '~/services/key-encoder'
 import { InvalidRequestException } from '../../exceptions'
-import { isValidHex } from './positive-key.helpers'
+import { isValidHex } from '~/util'
 
 export const STATUS = {
   POSITIVE: "POSITIVE"
