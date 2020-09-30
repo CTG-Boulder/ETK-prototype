@@ -63,8 +63,11 @@ route.get('/debug/hourly', async (req, res) => {
 
 // debug helper
 route.get('/debug/purge', async (req, res) => {
+  const queryFilters = getQueryFilters(req)
   if (req.query.purge) {
-    await EncounterRecord.remove({})
+    // strip out the purge request
+    delete queryFilters.filters.purge
+    await EncounterRecord.deleteMany(queryFilters.filters)
   }
 
   apiResponse(res, {
