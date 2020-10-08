@@ -10,7 +10,7 @@ export const STATUS = {
 }
 
 const schema = new mongoose.Schema({
-  clientKey: {
+  encounterId: {
     type: String
     , unique: true
     , required: true
@@ -44,8 +44,8 @@ schema.loadClass(class {
   static fetchEncodedKeysSince({ updatedAt }){
     return this.find({
         updatedAt: { $gte: updatedAt }
-      }).select('clientKey')
-      .then(docs => encodeKeysAndShuffle(docs.map(doc => doc.clientKey)))
+      }).select('encounterId')
+      .then(docs => encodeKeysAndShuffle(docs.map(doc => doc.encounterId)))
   }
 
   static createFromList( positives ){

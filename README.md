@@ -63,7 +63,7 @@ The API currently supports the following methods:
 - `since`: ISO Datetime specifying the cutoff of returned positive keys
 - `sharedPrime`: The shared prime number to use for encoding
 - `positiveKeys`: Server encoded positive keys
-- `clientKeys`: Server encoded keys provided by the client in the request body
+- `encounterIds`: Server encoded keys provided by the client in the request body
 
 ## Development
 

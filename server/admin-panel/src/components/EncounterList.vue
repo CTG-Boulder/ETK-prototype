@@ -17,13 +17,13 @@
       </b-table-column>
 
       <b-table-column
-        field="clientKey"
+        field="encounterId"
         label="key"
         sortable
         centered
         v-slot="props"
       >
-        <span class="mono">{{ props.row.clientKey }}</span>
+        <span class="mono">{{ props.row.encounterId }}</span>
       </b-table-column>
 
       <b-table-column

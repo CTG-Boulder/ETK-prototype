@@ -19,7 +19,7 @@ export const STATUS = {
 }
 
 const schema = new mongoose.Schema({
-  clientKey: {
+  encounterId: {
     type: String
     , required: true
     , unique: false
@@ -43,7 +43,7 @@ const schema = new mongoose.Schema({
 })
 
 // unique combinations of key and timestamp
-schema.index({ clientKey: 1, timestamp: 1 }, { unique: true });
+schema.index({ encounterId: 1, timestamp: 1 }, { unique: true });
 schema.index({ createdAt: 1 })
 schema.index({ updatedAt: 1 })
 schema.index({ timestamp: 1 })
@@ -55,12 +55,12 @@ schema.loadClass(class {
       throw new InvalidRequestException('No records provided', 400)
     }
 
-    const $or = records.map(r => _pick(r, ['clientKey', 'timestamp']))
+    const $or = records.map(r => _pick(r, ['encounterId', 'timestamp']))
     let existing = await this.find({ $or })
 
     let newRecords = _differenceBy(records, existing, d => {
       let ts = new Date(d.timestamp)
-      return d.clientKey + ' ' + ts
+      return d.encounterId + ' ' + ts
     })
 
     if (!newRecords || !newRecords.length){
