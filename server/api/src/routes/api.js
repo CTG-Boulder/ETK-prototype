@@ -33,14 +33,14 @@ route.put('/verify', async (req, res) => {
     throw new InvalidRequestException('Must send keys in request body as "keys"')
   }
 
-  let clientKeys = encodeKeysAndShuffle(keys)
+  let encounterIds = encodeKeysAndShuffle(keys)
   let updatedAt = q.updatedAt ? moment(q.updatedAt) : moment().subtract(14, 'days')
   let positiveKeys = await PositiveKey.fetchEncodedKeysSince({ updatedAt })
   apiResponse(res, {
     since: updatedAt,
     sharedPrime: getPrime(),
     positiveKeys,
-    clientKeys
+    encounterIds
   })
 })
 

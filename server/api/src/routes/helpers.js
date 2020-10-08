@@ -38,8 +38,10 @@ export const errorToJson = e => {
 
   if (config.isDev) {
     // include a stack trace on development
-    return { ...error, stack: e.stack }
+    error = { ...error, stack: e.stack }
   }
+
+  return error
 }
 
 // standardize responses
