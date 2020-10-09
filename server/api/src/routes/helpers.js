@@ -63,7 +63,6 @@ export const apiResponse = (res, data = {}, errors = []) => {
 }
 
 const RESERVED_QUERY_PARAMS = ['pageSize', 'page', 'sortBy']
-const SUPPORTED_OPERATORS = ['eq', 'gt', 'gte', 'lt', 'lte', 'ne']
 
 export const getQueryFilters = (req) => {
   let {
@@ -75,30 +74,8 @@ export const getQueryFilters = (req) => {
   pageSize = Math.min(pageSize, config.maxQuerySize)
 
   let startAt = page * pageSize
+  let filters = _omit(req.query, RESERVED_QUERY_PARAMS)
 
-  // perform some processing of the parameters to allow conversion and slightly
-  // more complicated queries -- this allows us to now use some operators
-  let filters = {}
-  for (var parameters of Object.entries(req.query)) {
-    if (RESERVED_QUERY_PARAMS.indexOf(parameters[0]) < 0) {
-      let index =  parameters[1].indexOf(':');
-      var operator = undefined;
-      if (index > 0 ) {
-        // has a possible operator
-        operator = parameters[1].slice(0, index);
-        if (SUPPORTED_OPERATORS.indexOf(operator) < 0) {
-          operator = undefined
-        }
-      }
-      if (operator) {
-          // set-up the operator
-          filters[parameters[0]] = { ['$'.concat(operator)]: parameters[1].slice(index + 1)};
-      } else {
-        // no or unknown operator
-        filters[parameters[0]] = parameters[1];
-      }
-    }
-  }
   return {
     startAt,
     page,
