@@ -23,7 +23,7 @@ route.get('/debug', async (req, res) => {
     .find(queryFilters.filters, null, { sort: queryFilters.sortBy })
     .count()
 
-  res.header('X-Pages', Math.floor(count / queryFilters.pageSize))
+  res.header('X-Pages', Math.ceil(count / queryFilters.pageSize))
   apiResponse(res, { encounters })
 })
 
