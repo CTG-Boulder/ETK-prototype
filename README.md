@@ -87,6 +87,18 @@ yarn cache clean
 yarn install
 ```
 
+Repeat the same steps for the admin-panel:
+```sh
+docker run -i -t --mount type=bind,source=<path to ETK code roo>\server\admin-panel,destination=/app node /bin/bash
+```
+
+Inside the `api/` directory you will then run:
+
+```sh
+yarn cache clean
+yarn install
+```
+
 After a successful install you should be able to run:
 
 ```sh
