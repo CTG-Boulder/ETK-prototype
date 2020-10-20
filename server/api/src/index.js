@@ -15,7 +15,7 @@ const app = express()
 if (config.CORSOriginsAccepted.length > 0) {
   app.use(cors({
     origin: function(value, callback) {
-      if (value === undefined || config.CORSOriginsAccepted.indexOf(value) !== -1) {
+      if (value === undefined || value === 'null' || config.CORSOriginsAccepted.indexOf(value) !== -1) {
         callback(null, true)
       } else {
         console.log('rejected origin: ' + value)
