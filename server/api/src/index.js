@@ -12,17 +12,19 @@ const HOST = '0.0.0.0'
 
 // App
 const app = express()
-app.use(cors({
-  origin: function(value, callback) {
-    if (value === undefined || config.CORSOriginsAccepted.indexOf(value) !== -1) {
-      callback(null, true)
-    } else {
-      console.log('rejected origin: ' + value)
-      callback(null, false)
+if (config.CORSOriginsAccepted.length > 0) {
+  app.use(cors({
+    origin: function(value, callback) {
+      if (value === undefined || config.CORSOriginsAccepted.indexOf(value) !== -1) {
+        callback(null, true)
+      } else {
+        console.log('rejected origin: ' + value)
+        callback(null, false)
+      }
     }
-  }
-  , exposedHeaders: 'X-Pages'
-}))
+    , exposedHeaders: 'X-Pages'
+  }))
+}
 app.use(pinoHttp({ logger }))
 app.use('/api', api)
 app.listen(PORT, HOST)
