@@ -80,9 +80,10 @@ If you run into trouble in windows, you may need to run:
 docker run -i -t --mount type=bind,source=<path to ETK code roo>\server\api,destination=/app server_api /bin/bash
 ```
 
-Inside the `api/` directory you will then run:
+Inside the image you will then run:
 
 ```sh
+cd /app
 yarn cache clean
 yarn install
 ```
@@ -92,9 +93,10 @@ Repeat the same steps for the admin-panel:
 docker run -i -t --mount type=bind,source=<path to ETK code roo>\server\admin-panel,destination=/app node /bin/bash
 ```
 
-Inside the `api/` directory you will then run:
+Inside the image you will then run:
 
 ```sh
+cd /app
 yarn cache clean
 yarn install
 ```
