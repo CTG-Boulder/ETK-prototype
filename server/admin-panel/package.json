@@ -12,7 +12,7 @@
     "@statnett/vue-plotly": "^0.3.2",
     "buefy": "^0.9.2",
     "core-js": "^2.6.5",
-    "moment": "^2.27.0",
+    "moment": "^2.29.2",
     "plotly.js": "^1.55.1",
     "vue": "^2.6.10",
     "vue-router": "^3.4.3"
